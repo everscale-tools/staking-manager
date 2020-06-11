@@ -1,0 +1,9 @@
+.env
+docker-compose.yml
+config.js
+curl-headers
+*.log
+
+certs/
+db/
+node_modules/
