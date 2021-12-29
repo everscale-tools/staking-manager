@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 function protectRoute(secret) {
     const middleware = (req, res, next) => {
-        const token = req.header('FREETON-SM-APIKEY');
+        const token = req.header('EVERSCALE-SM-APIKEY');
 
         if (_.isEmpty(token)) {
             res.status(401).send('error: token is not provided');
@@ -38,8 +38,8 @@ function protectRoute(secret) {
             }
 
             const misfits = [
-                process.env.FREETON_SM_ADMIN_NAME !== decoded.name,
-                process.env.FREETON_SM_ADMIN_PASSWORD !== decoded.password
+                process.env.EVERSCALE_SM_ADMIN_NAME !== decoded.name,
+                process.env.EVERSCALE_SM_ADMIN_PASSWORD !== decoded.password
             ]
 
             if (_.some(misfits)) {
@@ -57,19 +57,19 @@ function protectRoute(secret) {
     return middleware;
 }
 
-const secret = process.env.FREETON_SM_AUTH_SECRET;
+const secret = process.env.EVERSCALE_SM_AUTH_SECRET;
 
 if (! _.isEmpty(secret)) {
     app.use(protectRoute(secret).unless({ path: ['/auth', /\/stats*/] }));
 
     apiRouter.post('/auth', (req, res) => {
         const misfits = [
-            _.isEmpty(process.env.FREETON_SM_ADMIN_NAME),
-            _.isEmpty(process.env.FREETON_SM_ADMIN_PASSWORD),
+            _.isEmpty(process.env.EVERSCALE_SM_ADMIN_NAME),
+            _.isEmpty(process.env.EVERSCALE_SM_ADMIN_PASSWORD),
             _.isEmpty(req.body.name),
             _.isEmpty(req.body.password),
-            process.env.FREETON_SM_ADMIN_NAME !== req.body.name,
-            process.env.FREETON_SM_ADMIN_PASSWORD !== req.body.password
+            process.env.EVERSCALE_SM_ADMIN_NAME !== req.body.name,
+            process.env.EVERSCALE_SM_ADMIN_PASSWORD !== req.body.password
         ];
 
         if (_.some(misfits)) {

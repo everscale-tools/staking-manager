@@ -153,7 +153,7 @@ router.get('/stats/:representation', asyncHandler(async (req, res) => {
                 .join()
                 .value();
 
-            res.send(`freeton-validator,host=${_.get(stats, 'influxdb.host', 'localhost')} ${fields}`);
+            res.send(`everscale-validator,host=${_.get(stats, 'influxdb.host', 'localhost')} ${fields}`);
         } break;
         default: {
             const err = new Error('representation must be either \'json\' or \'influxdb\'');

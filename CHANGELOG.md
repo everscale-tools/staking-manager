@@ -1,5 +1,25 @@
 # Summary of Changes
 
+## 4.0.0
+- 'legacy' policy isn't supported anymore due to deprecation of C++ Node
+- usage of legacy tools, including fift, got rid of
+- transactions might be submitted via Rust Node Console
+- BREAKING(config): some fields are renamed/deleted - refer to config.js.example for guidance
+
+## 3.3.1
+- TONOS SDK updated to 1.27.1
+
+## 3.3.0
+- 'modern' policy doesn't rely on Elector ABI
+
+## 3.2.1
+- timediff extraction failure isn't fatal anymore
+
+## 3.2.0
+- ticktock sending implementation re-designed
+- timediff extraction re-designed
+- config.js example updated
+
 ## 3.1.1
 - wrong 'create_at' value in DePool events lookup got fixed
 

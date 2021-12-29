@@ -1,5 +1,5 @@
 module.exports = {
-    tonosConfig: {
+    everos: {
         network: {
             endpoints: ['https://net1.ton.dev', 'https://net5.ton.dev']
         }
@@ -13,52 +13,39 @@ module.exports = {
         }
     },
 
-    policy: {
-        type: <'modern'|'legacy'>,
+    funding: {
+        type: <'wallet'|'depool'>,
 
-        funding: {
-            type: <'wallet'|'depool'>,
+        // in case of 'wallet'
+        defaultStake: 3500001, // in EVERs
 
-            // in case of 'wallet'
-            defaultStake: 10001, // in TONs
+        // in case of 'depool'
+        addr: '0:2de8d63dc6169913cb734fa8effca16fa8c4fd2550834c1b9196d8a690f6e182',
+        eventAnticipationTimeout: 300000 // in milliseconds
+    },
 
-            // in case of 'depool'
-            addr: '0:2de8d63dc6169913cb734fa8effca16fa8c4fd2550834c1b9196d8a690f6e182',
-            eventAnticipationTimeout: 300000 // in milliseconds
+    console: {
+        client: {
+            privateKey: '<private key, public counterpart of which you pass to your node with "--ckey" arg>'
         },
-
-        // in case of 'modern'
-        console: {
-            client: {
-                privateKey: '<private key, public counterpart of which you pass to your node with "--ckey" arg>'
-            },
-            server: {
-                host: '1.2.3.4',
-                port: 3031,
-                publicKey: '<public key of the controlling server your node has generated for you>'
-            }
-        },
-
-        // in case of 'legacy'
-        validatorEngine: {
+        server: {
             host: '1.2.3.4',
-            port: 3030
-        },
-        liteServer: { // if you want to send transactions via lite-client
-            host: '1.2.3.4',
-            port: 3031
+            port: 3031,
+            publicKey: '<public key of the controlling server your node has generated for you>'
         }
     },
 
-    dbFiles: {
-        config: '/data/freeton-staking-manager/config.db',
-        elections: '/data/freeton-staking-manager/elections.db'
+    submitTransactionsWith: <'everos'|'console'>, // 'console' is default
+
+    datastore: {
+        config: '/data/everscale-staking-manager/config.db',
+        elections: '/data/everscale-staking-manager/elections.db'
     },
 
     periodicJobs: {
         enabled: true,
         acceptableTimeDiff: -10,
         sendStake: '*/15 * * * *',
-        recoverStake: '5/15 * * * *'
+        recoverStake: '0 0 1 1 *' // adjust in case of 'wallet' funding
     }
 }

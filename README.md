@@ -1,13 +1,13 @@
 ![build](https://img.shields.io/docker/cloud/build/sergemedvedev/freeton-staking-manager.svg)
 [![version](https://img.shields.io/docker/v/sergemedvedev/freeton-staking-manager?sort=semver)](https://hub.docker.com/r/sergemedvedev/freeton-staking-manager/tags)
 
-# FreeTON Staking Manager
+# Everscale Staking Manager
 
 ## What is it?
 
 This product is a complete solution for a Free TON validator, which abstracts away all the complexity of dealing with validator node and the network while sending stakes, receiving rewards and coping with various kinds of hardware or network issues.
 
-It supports both C++ (legacy) and Rust (modern) nodes, as well as both wallet-based and DePool-based staking.
+It supports both wallet-based and DePool-based staking.
 
 ## Support the Project
 You could help by:
@@ -20,25 +20,20 @@ You could help by:
 ## Have it Up & Running
 
 - Refer to [config.js.example](config.js.example) to create the `./config.js` file
-- In case of using 'legacy' mode, make sure you have the client private key and the server public keys, generated during validator engine initialization, stored in `./certs` directory (must contain `client`, `server.pub` and `liteserver.pub` files).
 - Create `./docker-compose.yml` using example below and deploy the service:
     ```yaml
     version: "2.3"
     services:
-      freeton-staking-manager:
-        image: sergemedvedev/freeton-staking-manager
+      staking-manager:
+        image: sergemedvedev/freeton-staking-manager:4.0.0
         volumes:
           - type: bind
             source: ./config.js
             target: /usr/src/app/config.js
             read_only: true
-          - type: bind
-            source: ./certs
-            target: /usr/src/app/certs
-            read_only: true
           - type: volume
-            source: freeton-staking-manager-data
-            target: /data/freeton-staking-manager
+            source: data
+            target: /data/staking-manager
         ports:
           - "127.0.0.1:3000:3000"
         environment:
@@ -46,7 +41,7 @@ You could help by:
         restart: always
 
     volumes:
-      freeton-staking-manager-data:
+      data:
     ```
 
   If you want to expose API to the internet, generate a secret and activate token-based authentication by providing additional environment variables:
@@ -57,9 +52,9 @@ You could help by:
     ports:
       - "3000:3000"
     environment:
-      FREETON_SM_ADMIN_NAME: <nice name>
-      FREETON_SM_ADMIN_PASSWORD: <strong password>
-      FREETON_SM_AUTH_SECRET: <secret generated via openssl>
+      EVERSCALE_SM_ADMIN_NAME: <nice name>
+      EVERSCALE_SM_ADMIN_PASSWORD: <strong password>
+      EVERSCALE_SM_AUTH_SECRET: <secret generated via openssl>
     ```
     ```console
     $ docker-compose up -d
@@ -73,7 +68,7 @@ If you have authentication enabled, get your token first:
   ```
 For convenience, you might want to store the token in a file in the HTTP header form:
   ```console
-  $ echo 'FREETON-SM-APIKEY: <token you received>' > token-header
+  $ echo 'EVERSCALE-SM-APIKEY: <token you received>' > token-header
   ```
 Now `curl` can be called like that:
   ```console
@@ -136,7 +131,7 @@ $ curl -XPUT localhost:3000/ticktock
 ### POST /validation/resume
 Returns the node back to validation after it's re-sync'ed from scratch
 
-> __NOTE__: at the moment it's supported only by 'legacy' staking policy
+> __NOTE__: at the moment it's NOT supported
 
 Example:
 ```console
