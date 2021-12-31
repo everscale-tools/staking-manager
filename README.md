@@ -5,7 +5,7 @@
 
 ## What is it?
 
-This product is a complete solution for a Free TON validator, which abstracts away all the complexity of dealing with validator node and the network while sending stakes, receiving rewards and coping with various kinds of hardware or network issues.
+This product is a complete solution for an Everscale validator, which abstracts away all the complexity of dealing with validator node and the network while sending stakes, receiving rewards and coping with various kinds of hardware or network issues.
 
 It supports both wallet-based and DePool-based staking.
 
