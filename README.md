@@ -13,7 +13,7 @@ It supports both wallet-based and DePool-based staking.
 You could help by:
 - submitting an issue
 - making a pull request
-- sending some TONs to _0:cba74138b0ac11873e1ec262a71a22c3352de44383877679d1c6bd5165b7b49e_
+- sending some EVERs to _0:cba74138b0ac11873e1ec262a71a22c3352de44383877679d1c6bd5165b7b49e_
 
   ![0:cba74138b0ac11873e1ec262a71a22c3352de44383877679d1c6bd5165b7b49e](gallery/wallet.png)
 
