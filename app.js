@@ -108,8 +108,6 @@ async function isTimeDiffAcceptable(threshold) {
 
 function createJobFn(fnName) {
     return async () => {
-        debug('INFO: BEGIN');
-
         try {
             const stakingManager = await stakingManagerInstance.get();
             const { acceptableTimeDiff } = periodicJobs;
@@ -124,8 +122,6 @@ function createJobFn(fnName) {
         catch (err) {
             debug('ERROR:', err.message);
         }
-
-        debug('INFO: END');
     }
 }
 
