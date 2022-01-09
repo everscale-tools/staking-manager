@@ -1,5 +1,10 @@
 # Summary of Changes
 
+## 4.1.0
+- reliability improvements
+- logging improvements
+- config.js example updated
+
 ## 4.0.0
 - 'legacy' policy isn't supported anymore due to deprecation of C++ Node
 - usage of legacy tools, including fift, got rid of

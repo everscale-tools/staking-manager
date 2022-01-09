@@ -16,7 +16,6 @@ app.use(logger('dev', {
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
 function protectRoute(secret) {
     const middleware = (req, res, next) => {

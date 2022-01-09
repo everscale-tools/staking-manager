@@ -20,8 +20,7 @@ module.exports = {
         defaultStake: 3500001, // in EVERs
 
         // in case of 'depool'
-        addr: '0:2de8d63dc6169913cb734fa8effca16fa8c4fd2550834c1b9196d8a690f6e182',
-        eventAnticipationTimeout: 300000 // in milliseconds
+        addr: '0:2de8d63dc6169913cb734fa8effca16fa8c4fd2550834c1b9196d8a690f6e182'
     },
 
     console: {
@@ -42,6 +41,10 @@ module.exports = {
         config: '/data/everscale-staking-manager/config.db',
         elections: '/data/everscale-staking-manager/elections.db'
     },
+
+    participationConfirmationTimeout: 3600, // minimal value of pause before attempting to send the stake again
+                                            // in case of absence of participation confirmation from Elector
+                                            // (this value is expected to exceed periodicJobs.sendStake period)
 
     periodicJobs: {
         enabled: true,
