@@ -1,5 +1,8 @@
 # Summary of Changes
 
+## 5.0.0
+- refactoring: migration to ESM
+
 ## 4.1.0
 - reliability improvements
 - logging improvements

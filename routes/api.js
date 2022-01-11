@@ -1,13 +1,14 @@
-'use strict';
+import _ from 'lodash';
+import Debug from 'debug';
+import express from 'express';
+import asyncHandler from 'express-async-handler';
+import getStakingManagerInstance from '../lib/staking-manager-instance.js';
+import * as config from '../config.js';
 
-const _ = require('lodash');
-const debug = require('debug')('api');
-const express = require('express');
-const asyncHandler = require('express-async-handler');
-const stakingManagerInstance = require('../lib/staking-manager-instance');
-const { stats } = require('../config');
-
+const debug = Debug('api');
 const router = express.Router();
+
+export default router;
 
 function errorHandler(err, req, res, next) {
     debug('ERROR:', err);
@@ -16,25 +17,23 @@ function errorHandler(err, req, res, next) {
 }
 
 const getLatestStakeAndWeightThrottled = _.throttle(async () => {
-    let result = { stake: 0, weight: 0 }
+    const stakingManager = getStakingManagerInstance();
 
     try {
-        const stakingManager = await stakingManagerInstance.get();
-
-        result = await stakingManager.getLatestStakeAndWeight();
+        return await stakingManager.getLatestStakeAndWeight();
     }
-    finally {
-        return result;
+    catch (err) {
+        return { stake: 0, weight: 0 }
     }
 }, 300000);
 const getWalletBalanceThrottled = _.throttle(async () => {
-    const stakingManager = await stakingManagerInstance.get();
+    const stakingManager = getStakingManagerInstance();
 
     return stakingManager.getWalletBalance();
 }, 300000);
 
 async function getStats(interval) {
-    const stakingManager = await stakingManagerInstance.get();
+    const stakingManager = getStakingManagerInstance();
     const blocksSignatures = await stakingManager.countBlocksSignatures(interval);
     const { stake, weight } = await getLatestStakeAndWeightThrottled();
     const timeDiff = await stakingManager.getTimeDiff();
@@ -50,7 +49,7 @@ async function getStats(interval) {
 }
 
 router.post('/stake/:action', asyncHandler(async (req, res) => {
-    const stakingManager = await stakingManagerInstance.get();
+    const stakingManager = getStakingManagerInstance();
 
     switch(req.params.action) {
         case 'send': {
@@ -77,7 +76,7 @@ router.post('/stake/:action', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.post('/elections/:action', asyncHandler(async (req, res) => {
-    const stakingManager = await stakingManagerInstance.get();
+    const stakingManager = getStakingManagerInstance();
 
     switch(req.params.action) {
         case 'skip': {
@@ -99,7 +98,7 @@ router.post('/elections/:action', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.get('/elections/:target', asyncHandler(async (req, res) => {
-    const stakingManager = await stakingManagerInstance.get();
+    const stakingManager = getStakingManagerInstance();
 
     let result;
 
@@ -129,7 +128,7 @@ router.get('/validation/status', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.post('/validation/resume', asyncHandler(async (req, res) => {
-    const stakingManager = await stakingManagerInstance.get();
+    const stakingManager = getStakingManagerInstance();
 
     await stakingManager.restoreKeys();
 
@@ -153,7 +152,7 @@ router.get('/stats/:representation', asyncHandler(async (req, res) => {
                 .join()
                 .value();
 
-            res.send(`everscale-validator,host=${_.get(stats, 'influxdb.host', 'localhost')} ${fields}`);
+            res.send(`everscale-validator,host=${_.get(config, 'stats.influxdb.host', 'localhost')} ${fields}`);
         } break;
         default: {
             const err = new Error('representation must be either \'json\' or \'influxdb\'');
@@ -166,11 +165,9 @@ router.get('/stats/:representation', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.put('/ticktock', asyncHandler(async (req, res) => {
-    const stakingManager = await stakingManagerInstance.get();
+    const stakingManager = getStakingManagerInstance();
 
     await stakingManager.sendTicktock();
 
     res.send();
 }), errorHandler);
-
-module.exports = router;

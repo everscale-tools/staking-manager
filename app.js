@@ -1,16 +1,20 @@
-const _ = require('lodash');
-const debug = require('debug')('app');
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const { CronJob } = require('cron');
-const { periodicJobs } = require('./config');
-const stakingManagerInstance = require('./lib/staking-manager-instance');
-const apiRouter = require('./routes/api');
+import _ from 'lodash';
+import Debug from 'debug';
+import express from 'express';
+import http from 'http';
+import jwt from 'jsonwebtoken';
+import logger from 'morgan';
+import { CronJob } from 'cron';
+import unless from 'express-unless';
+import { periodicJobs } from './config.js';
+import getStakingManagerInstance from './lib/staking-manager-instance.js';
+import apiRouter from './routes/api.js';
 
 const app = express();
+const port = 3000;
+const debug = Debug('app');
 
+app.set('port', port);
 app.use(logger('dev', {
     skip: (req, res) => _.startsWith(req.originalUrl, '/stats') && res.statusCode < 400
 }));
@@ -22,18 +26,14 @@ function protectRoute(secret) {
         const token = req.header('EVERSCALE-SM-APIKEY');
 
         if (_.isEmpty(token)) {
-            res.status(401).send('error: token is not provided');
-
-            return;
+            return res.status(401).send('error: token is not provided');
         }
 
-        jwt.verify(token, secret, { algorithms: ["HS256"] }, (err, decoded) => {
+        return jwt.verify(token, secret, { algorithms: ["HS256"] }, (err, decoded) => {
             if (err) {
                 debug(err);
 
-                res.status(500).send('error: token verification failed');
-
-                return;
+                return res.status(500).send('error: token verification failed');
             }
 
             const misfits = [
@@ -42,16 +42,14 @@ function protectRoute(secret) {
             ]
 
             if (_.some(misfits)) {
-                res.status(401).send();
-
-                return;
+                return res.status(401).send();
             }
 
-            next();
+            return next();
         });
     }
 
-    middleware.unless = require('express-unless');
+    middleware.unless = unless;
 
     return middleware;
 }
@@ -72,9 +70,7 @@ if (! _.isEmpty(secret)) {
         ];
 
         if (_.some(misfits)) {
-            res.status(401).send('error: login/password ain\'t set/provided/valid');
-
-            return;
+            return res.status(401).send('error: login/password ain\'t set/provided/valid');
         }
 
         const token = jwt.sign(
@@ -82,7 +78,7 @@ if (! _.isEmpty(secret)) {
             secret,
             { algorithm: 'HS256', noTimestamp: true });
 
-        res.send(token);
+        return res.send(token);
     });
 }
 
@@ -92,7 +88,7 @@ async function isTimeDiffAcceptable(threshold) {
     let result = true;
 
     try {
-        const stakingManager = await stakingManagerInstance.get();
+        const stakingManager = getStakingManagerInstance();
         const timeDiff = await stakingManager.getTimeDiff();
 
         result = (timeDiff > _.defaultTo(threshold, 0));
@@ -108,7 +104,7 @@ async function isTimeDiffAcceptable(threshold) {
 function createJobFn(fnName) {
     return async () => {
         try {
-            const stakingManager = await stakingManagerInstance.get();
+            const stakingManager = getStakingManagerInstance();
             const { acceptableTimeDiff } = periodicJobs;
 
             if (await isTimeDiffAcceptable(acceptableTimeDiff)) {
@@ -136,4 +132,20 @@ if (periodicJobs.enabled) {
     runJobs();
 }
 
-module.exports = app;
+const server = http.createServer(app);
+
+server.setTimeout(600000);
+server.on('error', (err) => {
+    debug(err);
+
+    process.exit(1);
+});
+server.on('listening', () => {
+    const addr = server.address();
+    const bind = _.isString(addr)
+        ? 'pipe ' + addr
+        : 'port ' + addr.port;
+
+    debug('listening on ' + bind);
+});
+server.listen(port);

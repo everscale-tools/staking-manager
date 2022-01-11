@@ -26,5 +26,4 @@ RUN npm ci
 
 COPY . .
 
-CMD ["node", "./bin/www"]
-
+CMD ["node", "app.js"]
