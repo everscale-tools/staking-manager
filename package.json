@@ -17,9 +17,9 @@
     "express-unless": "~0.5.0",
     "jsonwebtoken": "~8.5.1",
     "lodash": "~4.17.21",
+    "lowdb": "~3.0.0",
     "mem": "~6.1.0",
     "morgan": "~1.10.0",
-    "nedb": "~1.8.0",
     "tmp-promise": "~3.0.2"
   }
 }
