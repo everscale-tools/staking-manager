@@ -2,7 +2,7 @@ FROM alpine/git AS contracts
 
 RUN git clone https://github.com/tonlabs/ton-labs-contracts.git /ton-labs-contracts
 
-FROM sergemedvedev/tonlabs-node-tools:0.1.255 AS node-tools
+FROM sergemedvedev/tonlabs-node-tools:0.1.256 AS node-tools
 
 FROM node:bullseye-slim
 
