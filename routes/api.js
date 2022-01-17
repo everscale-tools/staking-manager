@@ -10,6 +10,7 @@ const router = express.Router();
 
 export default router;
 
+// eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
     debug('ERROR:', err);
 
@@ -23,7 +24,7 @@ const getLatestStakeAndWeightThrottled = _.throttle(async () => {
         return await stakingManager.getLatestStakeAndWeight();
     }
     catch (err) {
-        return { stake: 0, weight: 0 }
+        return { stake: 0, weight: 0 };
     }
 }, 300000);
 const getWalletBalanceThrottled = _.throttle(async () => {
@@ -45,31 +46,31 @@ async function getStats(interval) {
         weight,
         timeDiff,
         walletBalance
-    }
+    };
 }
 
 router.post('/stake/:action', asyncHandler(async (req, res) => {
     const stakingManager = getStakingManagerInstance();
 
     switch(req.params.action) {
-        case 'send': {
-            const force = _.some(['yes', 'true', '1'], v => v === _.toLower(req.query.force));
+    case 'send': {
+        const force = _.some(['yes', 'true', '1'], v => v === _.toLower(req.query.force));
 
-            await stakingManager.sendStake(!force);
-        } break;
-        case 'recover': {
-            await stakingManager.recoverStake();
-        } break;
-        case 'resize': {
-            await stakingManager.setNextStakeSize(_.toInteger(req.query.value));
-        } break;
-        default: {
-            const err = new Error('action isn\'t "send", "recover" nor "resize"');
+        await stakingManager.sendStake(!force);
+    } break;
+    case 'recover': {
+        await stakingManager.recoverStake();
+    } break;
+    case 'resize': {
+        await stakingManager.setNextStakeSize(_.toInteger(req.query.value));
+    } break;
+    default: {
+        const err = new Error('action isn\'t "send", "recover" nor "resize"');
 
-            err.statusCode = 400;
+        err.statusCode = 400;
 
-            throw err;
-        }
+        throw err;
+    }
     }
 
     res.send();
@@ -79,19 +80,19 @@ router.post('/elections/:action', asyncHandler(async (req, res) => {
     const stakingManager = getStakingManagerInstance();
 
     switch(req.params.action) {
-        case 'skip': {
-            await stakingManager.skipNextElections(true);
-        } break;
-        case 'participate': {
-            await stakingManager.skipNextElections(false);
-        } break;
-        default: {
-            const err = new Error('action is neither "skip" nor "participate"');
+    case 'skip': {
+        await stakingManager.skipNextElections(true);
+    } break;
+    case 'participate': {
+        await stakingManager.skipNextElections(false);
+    } break;
+    default: {
+        const err = new Error('action is neither "skip" nor "participate"');
 
-            err.statusCode = 400;
+        err.statusCode = 400;
 
-            throw err;
-        }
+        throw err;
+    }
     }
 
     res.send();
@@ -103,19 +104,19 @@ router.get('/elections/:target', asyncHandler(async (req, res) => {
     let result;
 
     switch (req.params.target) {
-        case 'history': {
-            result = await stakingManager.getElectionsHistory();
-        } break;
-        case 'participants': {
-            result = await stakingManager.getParticipantListExtended();
-        } break;
-        default: {
-            const err = new Error('target is neither "history" nor "participants"');
+    case 'history': {
+        result = await stakingManager.getElectionsHistory();
+    } break;
+    case 'participants': {
+        result = await stakingManager.getParticipantListExtended();
+    } break;
+    default: {
+        const err = new Error('target is neither "history" nor "participants"');
 
-            err.statusCode = 400;
+        err.statusCode = 400;
 
-            throw err;
-        }
+        throw err;
+    }
     }
 
     res.json(result);
@@ -141,26 +142,26 @@ router.get('/stats/:representation', asyncHandler(async (req, res) => {
     );
 
     switch (req.params.representation) {
-        case 'json': {
-            res.json(result);
-        } break;
-        case 'influxdb': {
-            const fields = _
-                .chain(result)
-                .toPairs()
-                .map(([k, v]) => `${_.snakeCase(k)}=${v}`)
-                .join()
-                .value();
+    case 'json': {
+        res.json(result);
+    } break;
+    case 'influxdb': {
+        const fields = _
+            .chain(result)
+            .toPairs()
+            .map(([k, v]) => `${_.snakeCase(k)}=${v}`)
+            .join()
+            .value();
 
-            res.send(`everscale-validator,host=${_.get(config, 'stats.influxdb.host', 'localhost')} ${fields}`);
-        } break;
-        default: {
-            const err = new Error('representation must be either \'json\' or \'influxdb\'');
+        res.send(`everscale-validator,host=${_.get(config, 'stats.influxdb.host', 'localhost')} ${fields}`);
+    } break;
+    default: {
+        const err = new Error('representation must be either \'json\' or \'influxdb\'');
 
-            err.statusCode = 404;
+        err.statusCode = 404;
 
-            throw err;
-        }
+        throw err;
+    }
     }
 }), errorHandler);
 
@@ -171,3 +172,4 @@ router.put('/ticktock', asyncHandler(async (req, res) => {
 
     res.send();
 }), errorHandler);
+

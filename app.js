@@ -29,7 +29,7 @@ function protectRoute(secret) {
             return res.status(401).send('error: token is not provided');
         }
 
-        return jwt.verify(token, secret, { algorithms: ["HS256"] }, (err, decoded) => {
+        return jwt.verify(token, secret, { algorithms: ['HS256'] }, (err, decoded) => {
             if (err) {
                 debug(err);
 
@@ -39,7 +39,7 @@ function protectRoute(secret) {
             const misfits = [
                 process.env.EVERSCALE_SM_ADMIN_NAME !== decoded.name,
                 process.env.EVERSCALE_SM_ADMIN_PASSWORD !== decoded.password
-            ]
+            ];
 
             if (_.some(misfits)) {
                 return res.status(401).send();
@@ -47,7 +47,7 @@ function protectRoute(secret) {
 
             return next();
         });
-    }
+    };
 
     middleware.unless = unless;
 
@@ -117,7 +117,7 @@ function createJobFn(fnName) {
         catch (err) {
             debug('ERROR:', err.message);
         }
-    }
+    };
 }
 
 function runJobs() {
