@@ -30,7 +30,9 @@ const getLatestStakeAndWeightThrottled = _.throttle(async () => {
 const getWalletBalanceThrottled = _.throttle(async () => {
     const stakingManager = getStakingManagerInstance();
 
-    return stakingManager.getWalletBalance();
+    return stakingManager.getAccountBalance(
+        _.get(config, 'wallet.addr')
+    );
 }, 300000);
 
 async function getStats(interval) {
