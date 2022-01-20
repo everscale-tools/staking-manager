@@ -49,28 +49,25 @@ async function getStats(interval) {
     };
 }
 
+class BadRequest extends Error {
+    constructor(message) {
+        super(message);
+
+        this.statusCode = 400;
+    }
+}
+
 router.post('/stake/:action', asyncHandler(async (req, res) => {
     const stakingManager = getStakingManagerInstance();
 
     switch(req.params.action) {
     case 'send': {
-        const force = _.some(['yes', 'true', '1'], v => v === _.toLower(req.query.force));
-
-        await stakingManager.sendStake(!force);
+        await stakingManager.sendStake();
     } break;
     case 'recover': {
         await stakingManager.recoverStake();
     } break;
-    case 'resize': {
-        await stakingManager.setNextStakeSize(_.toInteger(req.query.value));
-    } break;
-    default: {
-        const err = new Error('action isn\'t "send", "recover" nor "resize"');
-
-        err.statusCode = 400;
-
-        throw err;
-    }
+    default: throw new BadRequest('action is neither "send" nor "recover"');
     }
 
     res.send();
@@ -86,13 +83,7 @@ router.post('/elections/:action', asyncHandler(async (req, res) => {
     case 'participate': {
         await stakingManager.skipNextElections(false);
     } break;
-    default: {
-        const err = new Error('action is neither "skip" nor "participate"');
-
-        err.statusCode = 400;
-
-        throw err;
-    }
+    default: throw new BadRequest('action is neither "skip" nor "participate"');
     }
 
     res.send();
@@ -110,13 +101,7 @@ router.get('/elections/:target', asyncHandler(async (req, res) => {
     case 'participants': {
         result = await stakingManager.getParticipantListExtended();
     } break;
-    default: {
-        const err = new Error('target is neither "history" nor "participants"');
-
-        err.statusCode = 400;
-
-        throw err;
-    }
+    default: throw new BadRequest('target is neither "history" nor "participants"');
     }
 
     res.json(result);

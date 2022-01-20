@@ -121,11 +121,9 @@ function createJobFn(fnName) {
 }
 
 function runJobs() {
-    const sendStakeJob = new CronJob(periodicJobs.sendStake, createJobFn('sendStake'));
-    const recoverStakeJob = new CronJob(periodicJobs.recoverStake, createJobFn('recoverStake'));
+    const stakeSendingJob = new CronJob(periodicJobs.sendStake, createJobFn('sendStake'));
 
-    sendStakeJob.start();
-    recoverStakeJob.start();
+    stakeSendingJob.start();
 }
 
 if (periodicJobs.enabled) {
