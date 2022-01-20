@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import logger from 'morgan';
 import { CronJob } from 'cron';
 import unless from 'express-unless';
+import { serializeError } from 'serialize-error';
 import { periodicJobs } from './config.js';
 import getStakingManagerInstance from './lib/staking-manager-instance.js';
 import apiRouter from './routes/api.js';
@@ -94,7 +95,9 @@ async function isTimeDiffAcceptable(threshold) {
         result = (timeDiff > _.defaultTo(threshold, 0));
     }
     catch (err) {
-        debug('ERROR:', err.message);
+        const serialized = serializeError(err);
+
+        debug('ERROR:', JSON.stringify(serialized, null, 2));
         debug('INFO: timeDiff getting failed - the check will be skipped');
     }
 
@@ -115,7 +118,9 @@ function createJobFn(fnName) {
             }
         }
         catch (err) {
-            debug('ERROR:', err.message);
+            const serialized = serializeError(err);
+
+            debug('ERROR:', JSON.stringify(serialized, null, 2));
         }
     };
 }

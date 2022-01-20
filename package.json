@@ -23,6 +23,7 @@
     "mem": "~9.0.2",
     "mixwith": "~0.1.1",
     "morgan": "~1.10.0",
+    "serialize-error": "~9.0.0",
     "tmp-promise": "~3.0.2"
   },
   "devDependencies": {
