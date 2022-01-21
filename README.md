@@ -7,7 +7,7 @@
 
 This product is a complete solution for an Everscale validator, which abstracts away all the complexity of dealing with validator node and the network while sending stakes, receiving rewards and coping with various kinds of hardware or network issues.
 
-It supports both wallet-based and DePool-based staking.
+It supports both wallet-based and DePool-based staking, as well as EverOS-based and independent interaction with the blockchain.
 
 ## Support the Project
 You could help by:
@@ -76,31 +76,20 @@ Now `curl` can be called like that:
   ```
 
 ### POST /stake/:action
-Tries to send/recover/resize a stake
+Tries to send or recover a stake
 
-> __:action__ "send", "recover" or "resize"
+> __:action__ "send" or "recover"
 
-NOTE: only "send" (without "force") is usable in "depool" funding mode
+NOTE: only "send" is usable in "depool" funding mode
 
 Example:
 ```console
 $ curl -XPOST localhost:3000/stake/recover
 ```
-
-Pass _force_ query parameter to send a stake even if it's "already submitted":
-```console
-$ curl -XPOST localhost:3000/stake/send?force=yes
-```
-
-Pass _value_ query parameter to set the default stake size:
-
-```console
-$ curl -XPOST localhost:3000/stake/resize?value=20000
-```
 ---
 
 ### POST /elections/:action
-Allows to skip upcoming elections (no idea why one would need it)
+Allows to skip upcoming elections
 
 > __:action__ "skip" or "participate"
 
