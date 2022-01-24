@@ -3,10 +3,11 @@ import Debug from 'debug';
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 import getStakingManagerInstance from '../lib/staking-manager-instance.js';
-import * as config from '../config.js';
+import config from '../config.js';
 
 const debug = Debug('api');
 const router = express.Router();
+const stakingManager = await getStakingManagerInstance(config);
 
 export default router;
 
@@ -18,8 +19,6 @@ function errorHandler(err, req, res, next) {
 }
 
 const getLatestStakeAndWeightThrottled = _.throttle(async () => {
-    const stakingManager = getStakingManagerInstance();
-
     try {
         return await stakingManager.getLatestStakeAndWeight();
     }
@@ -27,16 +26,9 @@ const getLatestStakeAndWeightThrottled = _.throttle(async () => {
         return { stake: 0, weight: 0 };
     }
 }, 300000);
-const getWalletBalanceThrottled = _.throttle(async () => {
-    const stakingManager = getStakingManagerInstance();
-
-    return stakingManager.getAccountBalance(
-        _.get(config, 'wallet.addr')
-    );
-}, 300000);
+const getWalletBalanceThrottled = _.throttle(() => stakingManager.getWalletBalance(), 300000);
 
 async function getStats(interval) {
-    const stakingManager = getStakingManagerInstance();
     const blocksSignatures = await stakingManager.countBlocksSignatures(interval);
     const { stake, weight } = await getLatestStakeAndWeightThrottled();
     const timeDiff = await stakingManager.getTimeDiff();
@@ -60,8 +52,6 @@ class BadRequest extends Error {
 }
 
 router.post('/stake/:action', asyncHandler(async (req, res) => {
-    const stakingManager = getStakingManagerInstance();
-
     switch(req.params.action) {
     case 'send': {
         await stakingManager.sendStake();
@@ -76,8 +66,6 @@ router.post('/stake/:action', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.post('/elections/:action', asyncHandler(async (req, res) => {
-    const stakingManager = getStakingManagerInstance();
-
     switch(req.params.action) {
     case 'skip': {
         await stakingManager.skipNextElections(true);
@@ -92,8 +80,6 @@ router.post('/elections/:action', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.get('/elections/:target', asyncHandler(async (req, res) => {
-    const stakingManager = getStakingManagerInstance();
-
     let result;
 
     switch (req.params.target) {
@@ -116,8 +102,6 @@ router.get('/validation/status', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.post('/validation/resume', asyncHandler(async (req, res) => {
-    const stakingManager = getStakingManagerInstance();
-
     await stakingManager.restoreKeys();
 
     res.send();
@@ -133,6 +117,7 @@ router.get('/stats/:representation', asyncHandler(async (req, res) => {
         res.json(result);
     } break;
     case 'influxdb': {
+        const { host } = await stakingManager.getInfluxDbStatsSettings();
         const fields = _
             .chain(result)
             .toPairs()
@@ -140,7 +125,7 @@ router.get('/stats/:representation', asyncHandler(async (req, res) => {
             .join()
             .value();
 
-        res.send(`everscale-validator,host=${_.get(config, 'stats.influxdb.host', 'localhost')} ${fields}`);
+        res.send(`everscale-validator,host=${host} ${fields}`);
     } break;
     default: {
         const err = new Error('representation must be either \'json\' or \'influxdb\'');
@@ -153,8 +138,6 @@ router.get('/stats/:representation', asyncHandler(async (req, res) => {
 }), errorHandler);
 
 router.put('/ticktock', asyncHandler(async (req, res) => {
-    const stakingManager = getStakingManagerInstance();
-
     await stakingManager.sendTicktock();
 
     res.send();

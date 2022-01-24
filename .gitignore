@@ -1,6 +1,6 @@
 .env
 docker-compose.yml
-config.js
+config*.js
 curl-headers
 *.log
 

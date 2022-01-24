@@ -7,13 +7,14 @@ import logger from 'morgan';
 import { CronJob } from 'cron';
 import unless from 'express-unless';
 import { serializeError } from 'serialize-error';
-import { periodicJobs } from './config.js';
 import getStakingManagerInstance from './lib/staking-manager-instance.js';
 import apiRouter from './routes/api.js';
+import config from './config.js';
 
+const debug = Debug('app');
 const app = express();
 const port = 3000;
-const debug = Debug('app');
+const stakingManager = await getStakingManagerInstance(config);
 
 app.set('port', port);
 app.use(logger('dev', {
@@ -89,15 +90,11 @@ async function isTimeDiffAcceptable(threshold) {
     let result = true;
 
     try {
-        const stakingManager = getStakingManagerInstance();
         const timeDiff = await stakingManager.getTimeDiff();
 
         result = (timeDiff > _.defaultTo(threshold, 0));
     }
     catch (err) {
-        const serialized = serializeError(err);
-
-        debug('ERROR:', JSON.stringify(serialized, null, 2));
         debug('INFO: timeDiff getting failed - the check will be skipped');
     }
 
@@ -107,33 +104,39 @@ async function isTimeDiffAcceptable(threshold) {
 function createJobFn(fnName) {
     return async () => {
         try {
-            const stakingManager = getStakingManagerInstance();
-            const { acceptableTimeDiff } = periodicJobs;
+            const {
+                enabled: periodicJobsEnabled,
+                acceptableTimeDiff: threshold
+            } = await stakingManager.getPeriodicJobsSettings();
 
-            if (await isTimeDiffAcceptable(acceptableTimeDiff)) {
-                await _.invoke(stakingManager, fnName);
+            if (!periodicJobsEnabled) {
+                return;
             }
-            else {
-                debug(`WARN: job's canceled due to unacceptable TIME_DIFF (< ${acceptableTimeDiff})`);
+
+            const timeDiffIsAcceptable = await isTimeDiffAcceptable(threshold);
+
+            if (!timeDiffIsAcceptable) {
+                debug(`WARN: job's canceled due to unacceptable TIME_DIFF (< ${threshold})`);
+
+                return;
             }
+
+            await _.invoke(stakingManager, fnName);
         }
         catch (err) {
-            const serialized = serializeError(err);
-
-            debug('ERROR:', JSON.stringify(serialized, null, 2));
+            debug('ERROR:', JSON.stringify(serializeError(err), null, 2));
         }
     };
 }
 
-function runJobs() {
-    const stakeSendingJob = new CronJob(periodicJobs.sendStake, createJobFn('sendStake'));
+async function runJobs() {
+    const { sendStake: schedule } = await stakingManager.getPeriodicJobsSettings();
+    const stakeSendingJob = new CronJob(schedule, createJobFn('sendStake'));
 
     stakeSendingJob.start();
 }
 
-if (periodicJobs.enabled) {
-    runJobs();
-}
+await runJobs();
 
 const server = http.createServer(app);
 
