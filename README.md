@@ -1,5 +1,5 @@
-![build](https://img.shields.io/docker/cloud/build/sergemedvedev/freeton-staking-manager.svg)
-[![version](https://img.shields.io/docker/v/sergemedvedev/freeton-staking-manager?sort=semver)](https://hub.docker.com/r/sergemedvedev/freeton-staking-manager/tags)
+![build](https://img.shields.io/github/workflow/status/serge-medvedev/everscale-staking-manager/Publish%20Docker%20image)
+[![version](https://img.shields.io/docker/v/sergemedvedev/everscale-staking-manager?sort=semver)](https://hub.docker.com/r/sergemedvedev/everscale-staking-manager/tags)
 
 # Everscale Staking Manager
 
@@ -25,7 +25,7 @@ You could help by:
     version: "2.3"
     services:
       staking-manager:
-        image: sergemedvedev/freeton-staking-manager:4.0.0
+        image: sergemedvedev/everscale-staking-manager:5.0.0
         volumes:
           - type: bind
             source: ./config.js
