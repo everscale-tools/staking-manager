@@ -34,13 +34,19 @@ export default {
 
     // OPTIONAL
     datastore: {
-        path: '/data/staking-manager/elections.db'
+        path: '/data/staking-manager/db.json'
     },
 
     // OPTIONAL
     everos: {
         network: {
-            endpoints: ['https://net1.ton.dev', 'https://net5.ton.dev']
+            endpoints: [
+                'eri01.main.everos.dev',
+                'gra01.main.everos.dev',
+                'gra02.main.everos.dev',
+                'lim01.main.everos.dev',
+                'rbx01.main.everos.dev'
+            ],
         }
     },
 
@@ -48,7 +54,7 @@ export default {
     // minimal value of pause before attempting to send the stake again
     // in case of absence of participation confirmation from Elector
     // (this value is expected to exceed periodicJobs.sendStake period)
-    participationConfirmationTimeout: 3600,
+    participationConfirmationTimeout: 1800,
 
     // OPTIONAL
     periodicJobs: {

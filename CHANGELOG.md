@@ -1,7 +1,11 @@
 # Summary of Changes
 
 ## 5.0.0
-- refactoring: migration to ESM
+- wallet-based staking: stake size is managed automatically, manual resizing is no more
+- webhooks for notifications and/or alarms
+- huge part of the configuration settings got default values and made optional
+- refactoring: migration from CJS to ESM
+- a few minor bugs got fixed
 
 ## 4.1.0
 - reliability improvements
