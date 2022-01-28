@@ -64,13 +64,11 @@ export default {
     },
 
     // OPTIONAL
-    webhooks: {
-        options: {
-            url: '...',
-            method: 'POST',
-            headers: {
-                // ...
-            }
+    webhook: {
+        url: '...',
+        method: 'POST',
+        headers: {
+            // ...
         }
     }
 };
