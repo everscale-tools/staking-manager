@@ -86,19 +86,17 @@ if (! _.isEmpty(secret)) {
 
 app.use('/', apiRouter);
 
-async function isTimeDiffAcceptable(threshold) {
-    let result = true;
-
+async function getTimeDiffOr(defaultValue) {
     try {
         const timeDiff = await stakingManager.getTimeDiff();
 
-        result = (timeDiff > _.defaultTo(threshold, 0));
+        return timeDiff;
     }
     catch (err) {
         debug('INFO: timeDiff getting failed - the check will be skipped');
-    }
 
-    return result;
+        return defaultValue;
+    }
 }
 
 function createJobFn(fnName) {
@@ -113,10 +111,18 @@ function createJobFn(fnName) {
                 return;
             }
 
-            const timeDiffIsAcceptable = await isTimeDiffAcceptable(threshold);
+            const timeDiff = await getTimeDiffOr(0);
 
-            if (!timeDiffIsAcceptable) {
-                debug(`WARN: job's canceled due to unacceptable TIME_DIFF (< ${threshold})`);
+            if (Math.abs(timeDiff) > Math.abs(threshold)) {
+                debug(`WARN: job's canceled due to unacceptable TIME_DIFF (exceeding a threshold of ${threshold})`);
+
+                _.invoke(stakingManager, 'sendNotification', {
+                    event: 'TIMEDIFF_EXCEEDS_THRESHOLD',
+                    context: {
+                        value: timeDiff,
+                        threshold
+                    }
+                });
 
                 return;
             }
