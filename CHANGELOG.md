@@ -3,6 +3,10 @@
 ## 5.0.0
 - wallet-based staking: stake size is managed automatically, manual resizing is no more
 - webhooks for notifications and/or alarms
+  - on elections participation confirmed
+  - on elections participation is not confirmed for too long
+  - on the node getting out of sync
+  - on stake sending failed
 - huge part of the configuration settings got default values and made optional
 - refactoring: migration from CJS to ESM
 - a few minor bugs got fixed
