@@ -32,6 +32,7 @@ async function getStats(interval) {
     const blocksSignatures = await stakingManager.countBlocksSignatures(interval);
     const { stake, weight } = await getLatestStakeAndWeightThrottled();
     const timeDiff = await stakingManager.getTimeDiff();
+    const nodeVersion = await stakingManager.getNodeVersion();
     const walletBalance = await getWalletBalanceThrottled();
 
     return {
@@ -39,6 +40,7 @@ async function getStats(interval) {
         stake,
         weight,
         timeDiff,
+        nodeVersion,
         walletBalance
     };
 }
