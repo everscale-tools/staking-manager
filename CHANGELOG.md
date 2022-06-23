@@ -1,5 +1,8 @@
 # Summary of Changes
 
+## 5.1.0
+- 'node_version' made the part of stats
+
 ## 5.0.0
 - wallet-based staking: stake size is managed automatically, manual resizing is no more
 - webhooks for notifications and/or alarms
