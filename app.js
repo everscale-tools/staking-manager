@@ -5,7 +5,7 @@ import http from 'http';
 import jwt from 'jsonwebtoken';
 import logger from 'morgan';
 import { CronJob } from 'cron';
-import unless from 'express-unless';
+import { unless } from 'express-unless';
 import { serializeError } from 'serialize-error';
 import getStakingManagerInstance from './lib/staking-manager-instance.js';
 import apiRouter from './routes/api.js';
