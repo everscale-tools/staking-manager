@@ -1,4 +1,3 @@
-![build](https://img.shields.io/github/workflow/status/serge-medvedev/everscale-staking-manager/Publish%20Docker%20image)
 [![version](https://img.shields.io/docker/v/sergemedvedev/everscale-staking-manager?sort=semver)](https://hub.docker.com/r/sergemedvedev/everscale-staking-manager/tags)
 
 # Everscale Staking Manager
