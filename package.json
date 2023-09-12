@@ -1,6 +1,6 @@
 {
   "name": "everscale-staking-manager",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,8 +8,8 @@
     "eslint": "eslint '**/*.js' --ignore-pattern node_modules/"
   },
   "dependencies": {
-    "@eversdk/core": "^1.42.1",
-    "@eversdk/lib-node": "^1.42.1",
+    "@eversdk/core": "^1.44.3",
+    "@eversdk/lib-node": "^1.44.3",
     "async": "^3.2.4",
     "cron": "^2.1.0",
     "debug": "^4.3.4",
