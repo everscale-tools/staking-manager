@@ -1,8 +1,8 @@
 FROM alpine/git AS contracts
 
-RUN git clone https://github.com/tonlabs/ton-labs-contracts.git /ton-labs-contracts
+RUN git clone https://github.com/everx-labs/ton-labs-contracts.git /ton-labs-contracts
 
-FROM sergemedvedev/tonlabs-node-tools:0.1.310 AS node-tools
+FROM sergemedvedev/ever-node-tools:0.60.11 AS node-tools
 
 FROM node:bullseye-slim
 
